@@ -20,10 +20,9 @@ df_continents_users = df[df['Entity'].isin(continents)]
 df_countrys_users = df[~df['Entity'].isin(continents)]
 
 # Import and Clear Data
-dfUrban = pd.read_csv('urban_total.csv')
-dfUrban = dfUrban.drop(['Country Code', 'Indicator Name',
-                       'Indicator Code', 'Unnamed: 65'], axis=1)
-dfUrban = dfUrban.dropna()
+dfUrban = (pd.read_csv('urban_total.csv')
+           .drop(['Country Code', 'Indicator Name', 'Indicator Code', 'Unnamed: 65'], axis=1)
+           .dropna())
 
 
 with st.sidebar:
@@ -38,6 +37,8 @@ with st.sidebar:
                                      min_value=1990, max_value=2020)
     if compare:
         with st.container(border=1):
+            st.markdown(f"""<center><h2>Select Infos</h2></center>""",
+              unsafe_allow_html=True)
             year_options = df_countrys_users['Year'].unique()
             year_comparison = st.selectbox(label='Year', options=year_options)
             entity_options = df_countrys_users['Entity'].unique()
@@ -81,16 +82,16 @@ if top_10_chk == True:
     st.plotly_chart(top_10, use_container_width=True)
 
 if map_viz == True:
-    fig = px.choropleth(df_countrys_users[df_countrys_users['Year'] == yearSelected].sort_values('Number of Internet users', ascending=False),
-                        locations='Entity',
-                        locationmode='country names',
-                        color='Number of Internet users',
-                        color_continuous_scale='plasma',
-                        fitbounds=False,
-                        height=700
-                        )
+    with st.container(border=True):
+        st.markdown(f"""<center><h1>Mapa Visualization</h1></center>""",
+                    unsafe_allow_html=True)
+        fig = px.choropleth(df_countrys_users[df_countrys_users['Year'] == yearSelected],
+                            locations='Entity',
+                            locationmode='country names',
+                            color='Number of Internet users',
+                            color_continuous_scale='plasma',
+                            fitbounds=False,
+                            height=700
+                            )
 
-    st.plotly_chart(fig, use_container_width=True)
-
-if map_viz and top_10_chk:
-    fig, top_10 = st.columns(2)
+        st.plotly_chart(fig, use_container_width=True)
